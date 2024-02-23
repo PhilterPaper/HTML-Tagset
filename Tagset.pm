@@ -8,13 +8,13 @@ HTML::Tagset - data tables useful in parsing HTML
 
 =head1 VERSION
 
-Version 3.20
+Version 3.21
 
 =cut
 
 use vars qw( $VERSION );
 
-$VERSION = '3.20';
+our $VERSION = '3.20'; # VERSION
 
 =head1 SYNOPSIS
 
@@ -75,7 +75,7 @@ C<$HTML::Tagset::emptyElement{'dl'}> does not exist, and so is not true.
 =head2 hashset %HTML::Tagset::optionalEndTag
 
 This hashset lists tag-names for elements that can have content, but whose
-end-tags are generally, "safely", omissible.  Example:
+end-tags are generally, "safely", omittable.  Example:
 C<$HTML::Tagset::emptyElement{'li'}> exists and is true.
 
 =cut
@@ -173,7 +173,7 @@ the value is a reference to a hashset containing all such attributes.
 
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
-This hashset contains all phrasal-level elements.
+This hashset contains all phrasal-level ("in line") elements.
 
 =cut
 
@@ -181,6 +181,7 @@ This hashset contains all phrasal-level elements.
   span abbr acronym q sub sup
   cite code em kbd samp strong var dfn strike
   b i u s tt small big 
+  ins del
   a img br
   wbr nobr blink
   font basefont bdo
