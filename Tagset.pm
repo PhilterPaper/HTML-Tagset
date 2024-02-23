@@ -188,14 +188,14 @@ This hashset contains all block-level elements.
   address
   blockquote
   center
-  del
   div
   hr
-  ins
   noscript script
   pre
+  table thead tbody tr td th caption col colgroup
 );
 # note that <br> breaks a line, but is not considered a block element
+# table children list may need to be adjusted
 
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
