@@ -10,11 +10,11 @@ Revision history for Perl extension HTML::Tagset
         Note that 'isindex' is quite obsolete in 'isHeadElement' per RT 109018.
         Add %isBlockElement per RT 74627.
         Add 'table' to, remove 'ins' and 'del' from, 'isBlockElement'.
+        Various changes found in petdance/HTML-Tagset, including new license,
+          move Tagset.pm to lib/HTML/, 2019 copyright dates, Makefile update.
 
         Note that RT 57496 requests that 'input' be removed from the "empty"
           tag list, but I'm not sure this is correct!
-        Does NOT contain some very minor changes found in petdance GitHub 
-          copy, such as 2019 copyright dates.
 
 2008-02-29  Andy Lester
 

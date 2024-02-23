@@ -1,5 +1,5 @@
 Changes
-Tagset.pm
+lib/HTML/Tagset.pm
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP

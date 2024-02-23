@@ -8,7 +8,7 @@ HTML::Tagset - data tables useful in parsing HTML
 
 =head1 VERSION
 
-Version 3.21
+Version 3.20
 
 =cut
 
@@ -40,6 +40,7 @@ use vars qw(
     $VERSION
     %emptyElement %optionalEndTag %linkElements %boolean_attr
     %isHeadElement %isBodyElement %isPhraseMarkup
+    %isBlockElement
     %is_Possible_Strict_P_Content
     %isHeadOrBodyElement
     %isList %isTableElement %isFormElement
@@ -192,10 +193,10 @@ This hashset contains all block-level elements.
   hr
   noscript script
   pre
-  table thead tbody tr td th caption col colgroup
+  table thead tbody tfoot tr caption
 );
 # note that <br> breaks a line, but is not considered a block element
-# table children list may need to be adjusted
+# TBD do children of <table> belong here?
 
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
@@ -212,7 +213,7 @@ This hashset contains all phrasal-level ("in line") elements.
   wbr nobr blink
   font basefont bdo
   spacer embed noembed
-);  # had: center, hr, table
+); 
 
 
 =head2 hashset %HTML::Tagset::is_Possible_Strict_P_Content
@@ -472,10 +473,10 @@ Copyright 1995-2000 Gisle Aas.
 
 Copyright 2000-2005 Sean M. Burke.
 
-Copyright 2005-2008 Andy Lester.
+Copyright 2005-2019 Andy Lester.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify it
+under the terms of the Artistic License version 2.0.
 
 =head1 ACKNOWLEDGEMENTS
 
