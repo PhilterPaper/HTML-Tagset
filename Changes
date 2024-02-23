@@ -3,12 +3,12 @@ Revision history for Perl extension HTML::Tagset
 2024-02-23  Phil Perry
 
         Add 'ins' and 'del' to 'phrasal' tag list (was causing errors in
-          HTML::TreeBuilder). Fix POD spelling error.
+          HTML::TreeBuilder) per RT 151970. Fix POD spelling error.
         Change in POD 'isBodyMarkup' to 'isBodyElement' per RT 118356,
           RT 109024, and RT 34913.
         Clarify 'isHeadElement' POD per RT 109044.
         Note that 'isindex' is quite obsolete in 'isHeadElement' per RT 109018.
-        Add %isBlockEement per RT 74627.
+        Add %isBlockElement per RT 74627.
 
 2008-02-29  Andy Lester
 
