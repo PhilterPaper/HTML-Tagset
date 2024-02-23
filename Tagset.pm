@@ -171,6 +171,32 @@ the value is a reference to a hashset containing all such attributes.
 #     marquee??  app??  (both unimplemented)
 #==========================================================================
 
+=head2 hashset %HTML::Tagset::isBlockElement
+
+This hashset contains all block-level elements.
+
+=cut
+
+# courtesy of stas@sysd.org, via RT 74627
+# source: http://en.wikipedia.org/wiki/HTML_element#Block_elements
+%isBlockElement = map {; $_ => 1 } qw(
+  p
+  h1 h2 h3 h4 h5 h6
+  dl dt dd
+  ol ul li
+  dir
+  address
+  blockquote
+  center
+  del
+  div
+  hr
+  ins
+  noscript script
+  pre
+);
+# note that <br> breaks a line, but is not considered a block element
+
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
 This hashset contains all phrasal-level ("in line") elements.
@@ -220,13 +246,15 @@ P element, for a strict model of HTML.
 
 =head2 hashset %HTML::Tagset::isHeadElement
 
-This hashset contains all elements that elements that should be
-present only in the 'head' element of an HTML document.
+This hashset contains all elements that elements that may be
+present in the 'head' element of an HTML document. Some, such as <script>,
+may also by in the 'body'.
 
 =cut
 
 %isHeadElement = map {; $_ => 1 }
  qw(title base link meta isindex script style object bgsound);
+# 'isindex' is quite obsolete
 
 =head2 hashset %HTML::Tagset::isList
 
@@ -256,7 +284,7 @@ a "form" element.
 %isFormElement  = map {; $_ => 1 }
  qw(input select option optgroup textarea button label);
 
-=head2 hashset %HTML::Tagset::isBodyMarkup
+=head2 hashset %HTML::Tagset::isBodyElement
 
 This hashset contains all elements that are to be found only in/under
 the "body" element of an HTML document.
