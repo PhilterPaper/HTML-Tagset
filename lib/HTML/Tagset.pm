@@ -171,6 +171,43 @@ the value is a reference to a hashset containing all such attributes.
 # Also seen here and there:
 #     marquee??  app??  (both unimplemented)
 #==========================================================================
+# TBD list of all HTML 5 tags at this time, per way2tutorial.com/html/tag,
+#     w3schools.com/tags, and "HTML for the World Wide Web" (E. Castro),
+#     html.com/tags, developer.mozilla.org/en-US/docs/Web/HTML/Element,
+#     tutorialspoint.com/html, w3docs.com/learn-html
+#
+#  a, abbr, address, area, article, aside, audio, b, base, basefont, bdi, bdo,
+#  bgsound, big, blink, blockquote, body, br, button, canvas, caption, center,
+#  cite, code, col, colgroup, command, data, datalist, dd,
+#  del, details, dfn, dialog, dir, div, dl, dt, em, embed, fieldset, 
+#  figcaption, figure, font, footer, form, frame, frameset, h1-6, head, header, 
+#  hgroup, hr, html, i, iframe, img, input, ins, kbd, keygen, label, legend, 
+#  li, link, main, map, mark, marquee, menu, meta, meter, nav, noframes, 
+#  noscript, object, ol, optgroup, option, output, p, param, picture, pre, 
+#  progress, q, rp, rt, ruby, s, samp, script, search, section, select, small, 
+#  source, span, strike, strong, style, sub, summary, sup, svg, table, tbody, 
+#  td, template, textarea, tfoot, th, thead, time, title, tr, track, tt, u, ul, 
+#  var, video, wbr, !doctype, !-- comment
+#
+# In HTML 5 and then removed:
+#  bb, datagrid, eventsource
+# Netscape-only extension:
+#  layer, ilayer, nolayer
+# Never quite standardized:
+#  nobr (use CSS white-space)
+# Very obsolete:
+#  acronym (use abbr), applet (use audio/video/embed/object), isindex,
+#  listing (use code), multicol (use CSS columns), spacer, xmp (use pre or code)
+# I swear I have seen these before, but can't find any refs discussing them: 
+#  bigger, smaller
+# Can't find anything on:
+#  sound (use audio?), server, app
+# 
+# Need to 1) include/exclude per desired HTML version (obsolete/removed tags)
+#         2) distribute among head-only, body-only, head+body, phrasal
+#            (inline), block, and who is child of whom (e.g., table) lists
+#         3) semantic and descriptive markup lists?
+#         4) attributes for tags?
 
 =head2 hashset %HTML::Tagset::isBlockElement
 
@@ -196,7 +233,7 @@ This hashset contains all block-level elements.
   table thead tbody tfoot tr caption
 );
 # note that <br> breaks a line, but is not considered a block element
-# TBD do children of <table> belong here?
+# TBD do children of <table> belong here? ditto for <li>
 
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
@@ -214,6 +251,7 @@ This hashset contains all phrasal-level ("in line") elements.
   font basefont bdo
   spacer embed noembed
 ); 
+# TBD td, th, col, colgroup?
 
 
 =head2 hashset %HTML::Tagset::is_Possible_Strict_P_Content
