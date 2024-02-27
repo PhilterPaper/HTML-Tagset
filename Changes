@@ -1,20 +1,31 @@
 Revision history for Perl extension HTML::Tagset
 
-2024-02-23  Phil Perry
+2024-02-26  Phil Perry
 
-        Add 'ins' and 'del' to 'phrasal' tag list (was causing errors in
+        Add 'ins' and 'del' to 'isPhraseMarkup' tag list (was causing errors in
           HTML::TreeBuilder) per RT 151970. Fix POD spelling error.
+        Add %elementAttributes list, analogous to %linkElements
+        Add 'table' to, remove 'ins' and 'del' from, 'isBlockElement'.
+        Per TODO, change %boolean_attr from simple hash to hash of hashes,
+          as 'input' element was done already. This is for a consistent 
+          usage of this list.
+        Filled out various lists with all the latest tags I could find.
+        Added 'elementAttributes' hash to list each tag's attributes.
+        Propose some sort of master list of parents and children, showing
+          what children are mandatory and what are optional for a given tag,
+          and what tags MUST be children of other tags (requesting feedback).
+
+        Various changes found in petdance/HTML-Tagset, including new license,
+          move Tagset.pm to lib/HTML/, 2019 copyright dates, Makefile update.
         Change in POD 'isBodyMarkup' to 'isBodyElement' per RT 118356,
           RT 109024, and RT 34913.
         Clarify 'isHeadElement' POD per RT 109044.
         Note that 'isindex' is quite obsolete in 'isHeadElement' per RT 109018.
         Add %isBlockElement per RT 74627.
-        Add 'table' to, remove 'ins' and 'del' from, 'isBlockElement'.
-        Various changes found in petdance/HTML-Tagset, including new license,
-          move Tagset.pm to lib/HTML/, 2019 copyright dates, Makefile update.
 
         Note that RT 57496 requests that 'input' be removed from the "empty"
-          tag list, but I'm not sure this is correct!
+          tag list, but I'm not sure this is correct! Did very old HTMLs have
+          a text child for <input>?
 
 2008-02-29  Andy Lester
 

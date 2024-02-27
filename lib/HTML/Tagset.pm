@@ -37,16 +37,16 @@ there, are always true.)
 =cut
 
 use vars qw(
-    $VERSION
-    %emptyElement %optionalEndTag %linkElements %boolean_attr
-    %isHeadElement %isBodyElement %isPhraseMarkup
-    %isBlockElement
-    %is_Possible_Strict_P_Content
-    %isHeadOrBodyElement
-    %isList %isTableElement %isFormElement
-    %isKnown %canTighten
-    @p_closure_barriers
-    %isCDATA_Parent
+  $VERSION
+  %emptyElement %optionalEndTag %linkElements %boolean_attr
+  %isHeadElement %isBodyElement %isPhraseMarkup
+  %isBlockElement %elementAttributes
+  %is_Possible_Strict_P_Content
+  %isHeadOrBodyElement
+  %isList %isTableElement %isFormElement
+  %isKnown %canTighten
+  @p_closure_barriers
+  %isCDATA_Parent
 );
 
 =head1 VARIABLES
@@ -56,20 +56,21 @@ Note that none of these variables are exported.
 =head2 hashset %HTML::Tagset::emptyElement
 
 This hashset has as values the tag-names (GIs) of elements that cannot
-have content.  (For example, "base", "br", "hr".)  So
+have content (children). (For example, "base", "br", "hr".)  So
 C<$HTML::Tagset::emptyElement{'hr'}> exists and is true.
 C<$HTML::Tagset::emptyElement{'dl'}> does not exist, and so is not true.
 
 =cut
 
-%emptyElement   = map {; $_ => 1 } qw(base link meta isindex
-                                     img br hr wbr
-                                     input area param
-                                     embed bgsound spacer
-                                     basefont col frame
-                                     ~comment ~literal
-                                     ~declaration ~pi
-                                    );
+%emptyElement   = map {; $_ => 1 } qw(
+  base link meta isindex
+  img br hr wbr
+  input area param
+  embed bgsound spacer
+  basefont col frame
+  ~comment ~literal
+  ~declaration ~pi
+);
 # The "~"-initial names are for pseudo-elements used by HTML::Entities
 #  and TreeBuilder
 
@@ -91,37 +92,202 @@ of attributes whose values can be links.
 
 =cut
 
+# TBD this list may need an update
 %linkElements =
 (
- 'a'       => ['href'],
- 'applet'  => ['archive', 'codebase', 'code'],
- 'area'    => ['href'],
- 'base'    => ['href'],
- 'bgsound' => ['src'],
+ 'a'          => ['href'],
+ 'applet'     => ['archive', 'codebase', 'code'],
+ 'area'       => ['href'],
+ 'base'       => ['href'],
+ 'bgsound'    => ['src'],
  'blockquote' => ['cite'],
- 'body'    => ['background'],
- 'del'     => ['cite'],
- 'embed'   => ['pluginspage', 'src'],
- 'form'    => ['action'],
- 'frame'   => ['src', 'longdesc'],
- 'iframe'  => ['src', 'longdesc'],
- 'ilayer'  => ['background'],
- 'img'     => ['src', 'lowsrc', 'longdesc', 'usemap'],
- 'input'   => ['src', 'usemap'],
- 'ins'     => ['cite'],
- 'isindex' => ['action'],
- 'head'    => ['profile'],
- 'layer'   => ['background', 'src'],
- 'link'    => ['href'],
- 'object'  => ['classid', 'codebase', 'data', 'archive', 'usemap'],
- 'q'       => ['cite'],
- 'script'  => ['src', 'for'],
- 'table'   => ['background'],
- 'td'      => ['background'],
- 'th'      => ['background'],
- 'tr'      => ['background'],
- 'xmp'     => ['href'],
+ 'body'       => ['background'],
+ 'del'        => ['cite'],
+ 'embed'      => ['pluginspage', 'src'],
+ 'form'       => ['action'],
+ 'frame'      => ['src', 'longdesc'],
+ 'iframe'     => ['src', 'longdesc'],
+ 'ilayer'     => ['background'],
+ 'img'        => ['src', 'lowsrc', 'longdesc', 'usemap'],
+ 'input'      => ['src', 'usemap'],
+ 'ins'        => ['cite'],
+ 'isindex'    => ['action'],
+ 'head'       => ['profile'],
+ 'layer'      => ['background', 'src'],
+ 'link'       => ['href'],
+ 'object'     => ['classid', 'codebase', 'data', 'archive', 'usemap'],
+ 'q'          => ['cite'],
+ 'script'     => ['src', 'for'],
+ 'table'      => ['background'],
+ 'td'         => ['background'],
+ 'th'         => ['background'],
+ 'tr'         => ['background'],
+ 'xmp'        => ['href'],
 );
+
+=head2 hash %HTML::Tagset::elementAttributes
+
+These are all the element (tag) 'attributes'. 
+Note that there is much overlap with the list 'HTML::Tagset::linkElements'. 
+
+Also, some of these attributes are
+considered obsolete (from very old HTML versions), and other attributes or
+CSS may be preferred. This is B<not> a recommendation to I<use> all of these
+attributes; they are listed here for completeness, as you may encounter them
+when processing HTML because at one time or another they were (more or less)
+widely used.
+
+=cut
+
+# per w3schools.com/tags/ref_attributes.asp, E. Castro, "HTML for the
+# World Wide Web", developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+%elementAttributes =
+(
+ 'a'          => ['download', 'href', 'hreflang', 'media', 'name', 'ping', 
+	          'referrerpolicy', 'rel', 'shape', 'target', 'type'],
+ 'applet'     => ['archive', 'code', 'codebase', 'height', 'width'],
+ 'area'       => ['alt', 'coords', 'download', 'href', 'hreflang', 'media', 
+	          'nohref', 'ping', 'referrerpolicy', 'rel', 'shape', 'target'],
+ 'audio'      => ['autoplay', 'controls', 'crossorigin', 'loop', 'muted', 
+	          'onabort', 'oncanplay', 'oncanplaythrough', 
+		  'ondurationchange', 'onemptied', 'onended', 'onerror', 
+		  'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 
+		  'onplay', 'onplaying', 'onprogress', 'onratechange', 
+		  'onseeked', 'onseeking', 'onstalled', 'onsuspend', 
+		  'ontimeupdate', 'onvolumechange', 'onwaiting', 'preload', 
+		  'src'],
+ 'base'       => ['href', 'target'],
+ 'basefont'   => ['color', 'font', 'size'],
+ 'bgsound'    => ['loop', 'src'],
+ 'blockquote' => ['cite'],
+ 'body'       => ['alink', 'background', 'bgcolor', 'leftmargin', 
+	          'onafterprint', 'onbeforeprint', 'onbeforeunload', 'onerror', 
+		  'onhashchange', 'onload', 'onoffline', 'ononline', 
+		  'onpagehide', 'onpageshow', 'onpopstate', 'onresize', 
+		  'onstorage', 'onunload', 'text', 'topmargin', 'vlink'],
+ 'br'         => ['clear'],
+ 'button'     => ['disabled', 'form', 'formaction', 'formmethod', 
+	          'formnovalidate', 'formtarget', 'name', 'popovertarget', 
+		  'popovertargetaction', 'type', 'value'],
+ 'canvas'     => ['height', 'width'],
+ 'caption'    => ['align'],
+ 'col'        => ['align', 'bgcolor', 'span', 'width'],
+ 'colgroup'   => ['align', 'bgcolor', 'span', 'valign', 'width'],
+ 'data'       => ['value'],
+ 'del'        => ['cite', 'datetime'],
+ 'details'    => ['ontoggle', 'open'],
+ 'dialog'     => ['open'],
+ 'div'        => ['align'],
+ 'embed'      => ['align', 'autostart', 'controls', 'height', 'loop', 'onabort',
+	          'oncanplay', 'pluginspage', 'onerror', 'src', 'type', 
+		  'width'],
+ 'fieldset'   => ['disabled', 'form', 'name'],
+ 'font'       => ['color', 'face', 'size'],
+ 'form'       => ['accept', 'accept-charset', 'action', 'autocomplete', 
+	          'enctype', 'method', 'name', 'novalidate', 'onreset', 
+		  'onsubmit', 'rel', 'target'],
+ 'frame'      => ['border', 'bordercolor', 'frameborder', 'framespacing', 
+	          'longdesc', 'name', 'noresize', 'marginwidth', 'marginheight',
+		  'scrolling', 'src', 'target'],
+ 'frameset'   => ['border', 'bordercolor', 'cols', 'frameborder', 
+	          'framespacing', 'rows'],
+ 'h1'         => ['align'],
+ 'h2'         => ['align'],
+ 'h3'         => ['align'],
+ 'h4'         => ['align'],
+ 'h5'         => ['align'],
+ 'h6'         => ['align'],
+ 'hr'         => ['align', 'color', 'noshade', 'size', 'width'],
+ 'html'       => ['manifest'],
+ 'iframe'     => ['align', 'allow', 'csp', 'frameborder', 'height', 'loading', 
+	          'longdesc', 'name', 'onload', 'referrerpolicy', 'sandbox', 
+		  'scrolling', 'src', 'srcdoc', 'width'],
+ 'ilayer'     => ['background'],
+ 'img'        => ['align', 'alt', 'border', 'crossorigin', 'decoding', 'height',
+	          'hspace', 'intrinsicsize', 'ismap', 'loading', 'lowsrc', 
+		  'longdesc', 'onabort', 'onerror', 'onload', 'referrerpolicy', 
+		  'sizes', 'src', 'srcset', 'usemap', 'vspace', 'width'],
+ 'input'      => ['accept', 'align', 'alt', 'autocomplete', 'capture', 
+	          'checked', 'dirname', 'disabled', 'form', 'formaction', 
+		  'formmethod', 'formnovalidate', 'formtarget', 'height', 
+		  'list', 'max', 'maxlength', 'min', 'minlength', 'multiple', 
+		  'name', 'novalidate', 'onload', 'onsearch', 'pattern', 
+		  'placeholder', 'popovertarget', 'popovertargetaction', 
+		  'readonly', 'required', 'size', 'src', 'step', 'type', 
+		  'usemap', 'value', 'width'],
+ 'ins'        => ['cite', 'datetime'],
+ 'isindex'    => ['action'],
+ 'head'       => ['profile'],
+ 'label'      => ['for', 'form'],
+ 'layer'      => ['background', 'src'],
+ 'legend'     => ['align'],
+ 'li'         => ['type', 'value'],
+ 'link'       => ['as', 'crossorigin', 'href', 'hreflang', 'integrity', 'media',
+	          'onload', 'referrerpolicy', 'rel', 'sizes', 'type'],
+ 'map'        => ['name'],
+ 'marquee'    => ['behavior', 'bgcolor', 'direction', 'loop', 'scrollamount', 
+	          'scrolldelay'],
+ 'menu'       => ['type'],
+ 'meta'       => ['charset', 'content', 'http-equiv', 'name'],
+ 'meter'      => ['form', 'high', 'low', 'max', 'min', 'optimum', 'value'],
+ 'object'     => ['align', 'archive', 'border', 'classid', 'codebase', 'data', 
+	          'form', 'height', 'hspace', 'name', 'onabort', 'oncanplay', 
+		  'onerror', 'type', 'usemap', 'vspace', 'width'],
+ 'ol'         => ['reversed', 'start', 'type'],
+ 'optgroup'   => ['disabled', 'label'],
+ 'option'     => ['disabled', 'label', 'selected', 'value'],
+ 'output'     => ['for', 'form', 'name'],
+ 'p'          => ['align'],
+ 'param'      => ['name', 'value'],
+ 'progress'   => ['form', 'max', 'value'],
+ 'q'          => ['cite'],
+ 'script'     => ['async', 'charset', 'crossorigin', 'defer', 'for', 
+	          'integrity', 'language', 'onerror', 'onload', 
+		  'referrerpolicy', 'src', 'type'],
+ 'select'     => ['autocomplete', 'disabled', 'form', 'multiple', 'name', 
+	          'required', 'selected', 'size'],
+ 'source'     => ['media', 'sizes', 'src', 'srcset', 'type'],
+ 'style'      => ['media', 'onerror', 'onload', 'scoped', 'type'],
+ 'table'      => ['align', 'background', 'bgcolor', 'border', 'bordercolor',
+                  'bordercolordark', 'bordercolorlight', 'cellpadding',
+	          'cellspacing', 'frame', 'height', 'rules', 'summary', 
+		  'width'],
+ 'tbody'      => ['align', 'bgcolor'],
+ 'td'         => ['align', 'background', 'bgcolor', 'char', 'colspan', 
+	          'headers', 'height', 'nowrap', 'rowspan', 'width'],
+ 'textarea'   => ['autocomplete', 'cols', 'dirname', 'disabled', 'form', 
+	          'inputmode', 'maxlength', 'minlength', 'name', 'placeholder', 
+		  'readonly', 'required', 'rows', 'wrap'],
+ 'tfoot'      => ['align', 'bgcolor', 'valign'],
+ 'th'         => ['align', 'background', 'bgcolor', 'char', 'colspan', 
+	          'headers', 'height', 'nowrap', 'rowspan', 'scope', 'width'],
+ 'thead'      => ['align', 'valign'],
+ 'time'       => ['datetime'],
+ 'tr'         => ['align', 'background', 'bgcolor', 'valign'],
+ 'track'      => ['default', 'kind', 'label', 'oncuechange', 'src', 'srclang'],
+ 'ul'         => ['type'],
+ 'video'      => ['autoplay', 'controls', 'crossorigin', 'height', 'loop', 
+	          'muted', 'onabort', 'oncanplay', 'oncanplaythrough', 
+		  'ondurationchange', 'onemptied', 'onended', 'onerror', 
+		  'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 
+		  'onplay', 'onplaying', 'onprogress', 'onratechange', 
+		  'onseeked', 'onseeking', 'onstalled', 'onsuspend', 
+		  'ontimeupdate', 'onvolumechange', 'onwaiting', 'playsinline', 
+		  'poster', 'preload', 'src', 'width'],
+ 'xmp'        => ['href'],
+);
+# Global Attributes: 'accesskey', 'autocapitalize', 'class', 'contenteditable', 
+#     'contextmenu', 'data-*', 'dir', 'draggable', 'enterkeyhint', 'hidden', 
+#     'id', 'inert', 'inputmode', 'itemprop', 'lang', 'popover', 'role', 'slot',
+#     'spellcheck', 'style', 'tabindex', 'title', 'translate'
+# Global for all visible elements: 'onblur', 'onchange', 'onclick', 
+#     'oncontextmenu', 'oncopy', 'oncut', 'ondblclick', 'ondrag', 'ondragend',
+#     'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop',
+#     'onfocus', 'oninput', 'oninvalid', 'onkeydown', 'onkeypress', 'onkeyup',
+#     'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup,
+#     'onmousewheel', 'onpaste', 'onscroll', 'onselect', 'onwheel'
+# Global (?) Attributes removed from HTML 5: 'align', 'bgcolor', 'border', 
+#     'color', 'contenteditable'
 
 =head2 hash %HTML::Tagset::boolean_attr
 
@@ -134,20 +300,19 @@ the value is a reference to a hashset containing all such attributes.
 =cut
 
 %boolean_attr = (
-# TODO: make these all hashes
-  'area'   => 'nohref',
-  'dir'    => 'compact',
-  'dl'     => 'compact',
-  'hr'     => 'noshade',
-  'img'    => 'ismap',
+  'area'   => { 'nohref' => 1 },
+  'dir'    => { 'compact' => 1 },
+  'dl'     => { 'compact' => 1 },
+  'hr'     => { 'noshade' => 1 },
+  'img'    => { 'ismap' => 1 },
   'input'  => { 'checked' => 1, 'readonly' => 1, 'disabled' => 1 },
-  'menu'   => 'compact',
-  'ol'     => 'compact',
-  'option' => 'selected',
-  'select' => 'multiple',
-  'td'     => 'nowrap',
-  'th'     => 'nowrap',
-  'ul'     => 'compact',
+  'menu'   => { 'compact' => 1 },
+  'ol'     => { 'compact' => 1 },
+  'option' => { 'selected' => 1 },
+  'select' => { 'multiple' => 1 },
+  'td'     => { 'nowrap' => 1 },
+  'th'     => { 'nowrap' => 1 },
+  'ul'     => { 'compact' => 1 },
 );
 
 #==========================================================================
@@ -220,20 +385,29 @@ This hashset contains all block-level elements.
 %isBlockElement = map {; $_ => 1 } qw(
   p
   h1 h2 h3 h4 h5 h6
+  hgroup
   dl dt dd
   ol ul li
-  dir
+  dir menu
+  map
   address
   blockquote
   center
   div
   hr
+  marquee
   noscript script
+  frameset frame noframes
+  form
   pre
   table thead tbody tfoot tr caption
+  template audio details dialog
+  figure figcaption
+  search 
+  summary section article header footer aside main
 );
 # note that <br> breaks a line, but is not considered a block element
-# TBD do children of <table> belong here? ditto for <li>
+# TBD do children of <table> belong here? ditto for <li> under lists.
 
 =head2 hashset %HTML::Tagset::isPhraseMarkup
 
@@ -246,12 +420,21 @@ This hashset contains all phrasal-level ("in line") elements.
   cite code em kbd samp strong var dfn strike
   b i u s tt small big 
   ins del
-  a img br
+  a br
+  img svg 
   wbr nobr blink
-  font basefont bdo
+  font basefont bdo bdi
   spacer embed noembed
+  button canvas command
+  data embed select textarea
+  iframe mark meter progress
+  nav object picture 
+  ruby time video
 ); 
-# TBD td, th, col, colgroup?
+# TBD td, th, col, colgroup? can't appear outside a table. some of the list
+#   must be children of another tag, e.g., form -> select, textarea
+# TBD label, legend? are these intended to be anything non-block that can 
+#   appear in the <body>, yet not required to be a child of another tag?
 
 
 =head2 hashset %HTML::Tagset::is_Possible_Strict_P_Content
@@ -291,9 +474,16 @@ may also by in the 'body'.
 
 =cut
 
-%isHeadElement = map {; $_ => 1 }
- qw(title base link meta isindex script style object bgsound);
-# 'isindex' is quite obsolete
+%isHeadElement = map {; $_ => 1 } qw(
+  title 
+  base basefont
+  link 
+  meta 
+  isindex 
+  script noscript
+  style 
+  object 
+);
 
 =head2 hashset %HTML::Tagset::isList
 
@@ -301,7 +491,10 @@ This hashset contains all elements that can contain "li" elements.
 
 =cut
 
-%isList         = map {; $_ => 1 } qw(ul ol dir menu);
+%isList         = map {; $_ => 1 } qw(
+  ul ol 
+  dir menu
+);
 
 =head2 hashset %HTML::Tagset::isTableElement
 
@@ -310,8 +503,12 @@ a "table" element.
 
 =cut
 
-%isTableElement = map {; $_ => 1 }
- qw(tr td th thead tbody tfoot caption col colgroup);
+%isTableElement = map {; $_ => 1 } qw(
+  tr td th 
+  thead tbody tfoot 
+  caption 
+  col colgroup
+);
 
 =head2 hashset %HTML::Tagset::isFormElement
 
@@ -320,8 +517,36 @@ a "form" element.
 
 =cut
 
-%isFormElement  = map {; $_ => 1 }
- qw(input select option optgroup textarea button label);
+%isFormElement  = map {; $_ => 1 } qw(
+  input 
+  select optgroup 
+  textarea 
+  button 
+  label
+  fieldset
+  legend
+  datalist option 
+  option
+  output
+  keygen
+);
+
+# TBD there are some other parent-child relationships that might need to
+# be specified:
+#   audio, video -> source, track
+#   dl -> dt, dd
+#   ol, ul -> li
+#   figure -> figcaption
+#   form -> fieldset
+#   select (form) -> optgroup
+#   datalist (form) -> option
+#   frameset -> frame
+#   map -> area
+#   object ->param
+#   picture -> source
+#   ruby -> rp, rt
+# perhaps a general parent_children hash? mark a child as mandatory or optional,
+# include table, form, list
 
 =head2 hashset %HTML::Tagset::isBodyElement
 
@@ -367,9 +592,12 @@ the head or in the body.
 
 =cut
 
-%isHeadOrBodyElement = map {; $_ => 1 }
-  qw(script isindex style object map area param noscript bgsound);
-  # i.e., if we find 'script' in the 'body' or the 'head', don't freak out.
+%isHeadOrBodyElement = map {; $_ => 1 } qw(
+  script noscript 
+  isindex 
+  style
+);
+# i.e., if we find 'script' in the 'body' or the 'head', don't freak out.
 
 
 =head2 hashset %HTML::Tagset::isKnown
@@ -379,12 +607,12 @@ This hashset lists all known HTML elements.
 =cut
 
 %isKnown = (%isHeadElement, %isBodyElement,
-  map{; $_=>1 }
-   qw( head body html
-       frame frameset noframes
-       ~comment ~pi ~directive ~literal
+  map{; $_=>1 } qw( 
+  head body html
+  frame frameset noframes
+  ~comment ~pi ~directive ~literal
 ));
- # that should be all known tags ever ever
+# that should be all known tags ever ever
 
 
 =head2 hashset %HTML::Tagset::canTighten
@@ -471,8 +699,10 @@ This hashset includes all elements whose content is CDATA.
 
 =cut
 
-%isCDATA_Parent = map {; $_ => 1 }
-  qw(script style  xmp listing plaintext);
+%isCDATA_Parent = map {; $_ => 1 } qw(
+  script style  
+  xmp listing plaintext
+);
 
 # TODO: there's nothing else that takes CDATA children, right?
 
