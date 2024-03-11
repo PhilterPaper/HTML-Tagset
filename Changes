@@ -1,6 +1,9 @@
 Revision history for Perl extension HTML::Tagset
 
-2024-02-26  Phil Perry
+2024-03-09  Phil Perry
+
+====== 3.22 official released, moved to /Strawberry/perl/site/lib from vendor
+       ins, del added, %isBodyMarkup fixed; no other changes made
 
         Add 'ins' and 'del' to 'isPhraseMarkup' tag list (was causing errors in
           HTML::TreeBuilder) per RT 151970. Fix POD spelling error.
